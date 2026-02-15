@@ -25,7 +25,7 @@ const trustItems = [
 ];
 
 interface TrustBarProps {
-  variant?: "light" | "dark";
+  variant?: "light" | "dark" | "glass";
   className?: string;
 }
 
@@ -34,18 +34,30 @@ export function TrustBar({ variant = "light", className }: TrustBarProps) {
     <div
       className={cn(
         "py-6",
-        variant === "dark" ? "bg-neutral-900" : "bg-primary-50",
+        variant === "dark" && "bg-neutral-900",
+        variant === "light" && "bg-primary-50",
+        variant === "glass" && "bg-neutral-900 border-t border-white/5",
         className
       )}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+        <div className={cn(
+          "grid grid-cols-2 gap-4 md:grid-cols-4",
+          variant === "glass" && "md:gap-6"
+        )}>
           {trustItems.map((item) => (
-            <div key={item.label} className="flex items-center gap-3">
+            <div
+              key={item.label}
+              className={cn(
+                "flex items-center gap-3",
+                variant === "glass" &&
+                  "rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 px-4 py-3"
+              )}
+            >
               <div
                 className={cn(
                   "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg",
-                  variant === "dark"
+                  variant === "dark" || variant === "glass"
                     ? "bg-primary-500/20 text-primary-400"
                     : "bg-primary-500/10 text-primary-600"
                 )}
@@ -56,7 +68,9 @@ export function TrustBar({ variant = "light", className }: TrustBarProps) {
                 <p
                   className={cn(
                     "text-sm font-semibold",
-                    variant === "dark" ? "text-white" : "text-neutral-900"
+                    variant === "dark" || variant === "glass"
+                      ? "text-white"
+                      : "text-neutral-900"
                   )}
                 >
                   {item.label}
@@ -64,7 +78,9 @@ export function TrustBar({ variant = "light", className }: TrustBarProps) {
                 <p
                   className={cn(
                     "text-xs",
-                    variant === "dark" ? "text-neutral-400" : "text-neutral-500"
+                    variant === "dark" || variant === "glass"
+                      ? "text-neutral-400"
+                      : "text-neutral-500"
                   )}
                 >
                   {item.description}
