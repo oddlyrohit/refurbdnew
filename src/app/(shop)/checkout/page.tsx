@@ -88,11 +88,33 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     setIsProcessing(true);
-    // TODO: Integrate Stripe Checkout session creation
-    // For now, simulate order placement
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    clearCart();
-    router.push("/checkout/success?order=RFB-20260215-DEMO");
+    try {
+      const res = await fetch("/api/checkout/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: items.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+          })),
+          shippingAddress: address,
+          shippingMethod,
+          promoCode: "",
+          email,
+        }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        clearCart();
+        window.location.href = data.url;
+      } else {
+        alert(data.error || "Something went wrong. Please try again.");
+        setIsProcessing(false);
+      }
+    } catch {
+      alert("Something went wrong. Please try again.");
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -402,7 +424,6 @@ export default function CheckoutPage() {
                 </button>
               </div>
 
-              {/* Payment form placeholder - will be replaced with Stripe Elements */}
               <div className="rounded-xl border border-neutral-200 p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <Lock className="h-4 w-4 text-success-500" />
@@ -411,19 +432,18 @@ export default function CheckoutPage() {
                   </span>
                 </div>
 
-                <div className="space-y-3">
-                  <Input label="Card Number" placeholder="4242 4242 4242 4242" />
-                  <div className="grid grid-cols-2 gap-3">
-                    <Input label="Expiry Date" placeholder="MM / YY" />
-                    <Input label="CVC" placeholder="123" />
-                  </div>
-                  <Input label="Name on Card" placeholder="Full name" />
-                </div>
-
-                <p className="mt-4 text-xs text-neutral-400">
-                  Your payment info is encrypted and secure. We never store your
-                  card details.
+                <p className="text-sm text-neutral-600">
+                  You&apos;ll be redirected to Stripe&apos;s secure checkout to complete your payment.
+                  Your card details are handled entirely by Stripe — we never see or store them.
                 </p>
+
+                <div className="mt-4 flex items-center gap-3 text-xs text-neutral-400">
+                  <span>256-bit encryption</span>
+                  <span>•</span>
+                  <span>PCI DSS compliant</span>
+                  <span>•</span>
+                  <span>3D Secure supported</span>
+                </div>
               </div>
 
               <Button
@@ -433,7 +453,7 @@ export default function CheckoutPage() {
                 onClick={handlePlaceOrder}
                 isLoading={isProcessing}
               >
-                Place Order — {formatPrice(total)}
+                Proceed to Payment — {formatPrice(total)}
               </Button>
 
               <div className="flex items-center justify-center gap-4 text-xs text-neutral-400">
