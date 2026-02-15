@@ -6,6 +6,7 @@ import { ArrowLeft, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ImageUpload } from "@/components/admin/image-upload";
 
 interface SelectOption {
   id: string;
@@ -30,6 +31,8 @@ export default function EditProductPage({
   const [categories, setCategories] = useState<SelectOption[]>([]);
   const [brands, setBrands] = useState<SelectOption[]>([]);
   const [sellers, setSellers] = useState<SellerOption[]>([]);
+
+  const [images, setImages] = useState<{ id: string; url: string; altText: string | null; isPrimary: boolean; sortOrder: number }[]>([]);
 
   const [form, setForm] = useState({
     title: "",
@@ -69,6 +72,7 @@ export default function EditProductPage({
       setCategories(cats);
       setBrands(brs);
       setSellers(sls);
+      setImages(product.images || []);
       setForm({
         title: product.title || "",
         slug: product.slug || "",
@@ -193,6 +197,13 @@ export default function EditProductPage({
             </div>
           </div>
         </div>
+
+        {/* Images */}
+        <ImageUpload
+          productId={id}
+          images={images}
+          onImagesChange={setImages}
+        />
 
         {/* Classification */}
         <div className="rounded-xl border border-neutral-200 bg-white p-6">

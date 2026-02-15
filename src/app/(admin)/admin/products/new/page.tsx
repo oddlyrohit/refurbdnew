@@ -94,7 +94,8 @@ export default function NewProductPage() {
         }),
       });
       if (res.ok) {
-        router.push("/admin/products");
+        const product = await res.json();
+        router.push(`/admin/products/${product.id}/edit`);
       }
     } finally {
       setSaving(false);
