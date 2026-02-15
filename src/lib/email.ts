@@ -90,7 +90,7 @@ export async function sendOrderConfirmation(data: OrderEmailData) {
 
   try {
     await resend.emails.send({
-      from: "Refurbd <onboarding@resend.dev>",
+      from: "Refurbd <orders@refurbd.com.au>",
       to: data.to,
       subject: `Order Confirmed — ${data.orderNumber}`,
       html,
